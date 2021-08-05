@@ -1,6 +1,5 @@
 package com.orca.weather.ViewModel
 
-
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

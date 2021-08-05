@@ -1,7 +1,5 @@
 package com.orca.weather.api
 
-
-import com.orca.weather.BuildConfig
 import com.orca.weather.model.WeatherApi
 import retrofit2.Call
 import retrofit2.Retrofit
