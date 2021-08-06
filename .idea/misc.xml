@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/city_bar.xml" value="0.28615384615384615" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/activity_main.xml" value="0.27447916666666666" />
+        <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/main_info.xml" value="0.2713541666666667" />
       </map>
     </option>
   </component>

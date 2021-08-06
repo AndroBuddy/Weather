@@ -12,6 +12,7 @@ interface RetrofitService {
     @GET("data/2.5/weather?")
     fun getCurrentWeatherData(
         @Query("q") city : String?,
+        @Query("units") unit : String? = "metric",
         @Query("appid") AppId: String? = "2e65127e909e178d0af311a81f39948c" //Will have to create own API KEY and put them inside token
     ): Call<WeatherApi>?
 

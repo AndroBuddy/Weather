@@ -1,17 +1,18 @@
 package com.orca.weather
 
 import ViewModelFactory
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.orca.weather.ViewModel.MainViewModel
 import com.orca.weather.api.RetrofitService
 import com.orca.weather.databinding.ActivityMainBinding
 import com.orca.weather.repository.Repository
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val retrofitService = RetrofitService.getInstance()
     private lateinit var binding: ActivityMainBinding
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,22 +29,40 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, ViewModelFactory(Repository(retrofitService))).get(MainViewModel::class.java)
 
-        var textView = findViewById<TextView>(R.id.textView)
-        var button = findViewById<Button>(R.id.button)
-        var tv_editText = findViewById<TextView>(R.id.tv_editText)
+        val textView = findViewById<TextView>(R.id.textView)
+        val weatherView = findViewById<TextView>(R.id.text2)
+        val button = findViewById<Button>(R.id.button)
+        val editText = findViewById<TextView>(R.id.tv_editText)
 
-        viewModel.weatherList.observe(this, Observer { result ->
+        val feelsLike = findViewById<TextView>(R.id.feels_like)
+
+        val humidity = findViewById<TextView>(R.id.humidity)
+        val pressure = findViewById<TextView>(R.id.pressure)
+        val wind = findViewById<TextView>(R.id.wind)
+
+        viewModel.weatherList.observe(this, { result ->
             try {
-//            Log.e("MAINACTIVITY" , viewModel.weatherList.value?.coord.toString())
                 Log.e("MAINACTIVITY", result.coord.lon.toString())
-                textView!!.text = result.coord.lon!!.toString()
-            }catch(e: Exception){
+                val temp = result.main.temp
+                val feelsLikeVal = result.main.feels_like
+                val humid = result.main.humidity.roundToInt()
+                val pressureVal = result.main.pressure.roundToInt()
+                val windVal = result.wind.speed
+
+                textView!!.text = "$temp°C"
+                feelsLike!!.text = "$feelsLikeVal°C"
+                weatherView!!.text = result.weather[0].description
+                humidity!!.text = "$humid %"
+                pressure!!.text = "$pressureVal mBar"
+                wind!!.text = "$windVal Km/h"
+            }
+            catch(e: Exception) {
                 Log.e("MAINACTIVITY", "Invalid Input of City Name")
             }
         })
 
         button.setOnClickListener {
-            viewModel.getCurrentWeatherData(tv_editText.text.toString())
+            viewModel.getCurrentWeatherData(editText.text.toString())
         }
     }
 }
