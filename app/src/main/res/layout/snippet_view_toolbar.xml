@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Search City"
+                android:fontFamily="@font/urbanist_family"
                 android:layout_marginHorizontal="16dp"
                 android:background="@null"
                 android:textSize="20sp"

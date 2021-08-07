@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
@@ -21,7 +20,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.orca.weather.ViewModel.MainViewModel
 import com.orca.weather.api.RetrofitService
 import com.orca.weather.repository.Repository
-import java.lang.NullPointerException
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -38,8 +36,9 @@ class ToolbarFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         @Nullable container: ViewGroup?,
-        @Nullable savedInstanceState: Bundle?
+        savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_main, container, false)
         val reset = view.findViewById<ImageButton>(R.id.location_search)
         val editText = view.findViewById<EditText>(R.id.tv_editText)
@@ -65,14 +64,15 @@ class ToolbarFragment : Fragment() {
                 val pressureVal = result.main.pressure.roundToInt()
                 val windVal = result.wind.speed
 
-                textView!!.text = "$temp°C"
                 city!!.text = result.name + ", " + result.sys.country
                 feelsLike!!.text = "$feelsLikeVal°"
+                textView!!.text = "$temp°"
                 weatherView!!.text = result.weather[0].description.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
                     ) else it.toString()
                 }
+
                 humidity!!.text = "$humid %"
                 pressure!!.text = "$pressureVal mBar"
                 wind!!.text = "$windVal Km/h"
