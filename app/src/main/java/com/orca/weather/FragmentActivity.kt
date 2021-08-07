@@ -3,7 +3,13 @@ package com.orca.weather
 import ViewModelFactory
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,37 +19,50 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Nullable
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.appbar.AppBarLayout
 import com.orca.weather.ViewModel.MainViewModel
 import com.orca.weather.api.RetrofitService
 import com.orca.weather.repository.Repository
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
-class ToolbarFragment : Fragment() {
+
+class ToolbarFragment(private val con : Context) : Fragment() {
     private var mAppBarState = 0
     private var viewContactsBar: AppBarLayout? = null
     private var searchBar: AppBarLayout? = null
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var checkLocationPermission: ActivityResultLauncher<Array<String>>
+    private lateinit var googleApiClient: GoogleApiClient
     private lateinit var viewModel: MainViewModel
     private val retrofitService = RetrofitService.getInstance()
+    private var lon:String = "nullify"
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "MissingPermission")
     @Nullable
     override fun onCreateView(
         inflater: LayoutInflater,
         @Nullable container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_main, container, false)
         val reset = view.findViewById<ImageButton>(R.id.location_search)
         val editText = view.findViewById<EditText>(R.id.tv_editText)
 
-        viewModel = ViewModelProvider(this, ViewModelFactory(Repository(retrofitService))).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this,
+            ViewModelFactory(Repository(retrofitService))).get(MainViewModel::class.java)
+
 
         val textView = view.findViewById<TextView>(R.id.textView)
         val weatherView = view.findViewById<TextView>(R.id.text2)
@@ -55,9 +74,11 @@ class ToolbarFragment : Fragment() {
         val pressure = view.findViewById<TextView>(R.id.pressure)
         val wind = view.findViewById<TextView>(R.id.wind)
 
-        viewModel.weatherList.observe(viewLifecycleOwner, { result ->
+
+        location()
+        viewModel.weatherList.observe(viewLifecycleOwner) { result ->
             try {
-                Log.e("MAINACTIVITY", result.coord.lon.toString())
+                Log.e("MAIN ACTIVITY", result.coord.lon.toString())
                 val temp = result.main.temp.roundToInt()
                 val feelsLikeVal = result.main.feels_like.roundToInt()
                 val humid = result.main.humidity.roundToInt()
@@ -76,11 +97,10 @@ class ToolbarFragment : Fragment() {
                 humidity!!.text = "$humid %"
                 pressure!!.text = "$pressureVal mBar"
                 wind!!.text = "$windVal Km/h"
+            } catch (e: Exception) {
+                Log.e("MAIN ACTIVITY", "Invalid Input of City Name")
             }
-            catch(e: Exception) {
-                Log.e("MAINACTIVITY", "Invalid Input of City Name")
-            }
-        })
+        }
 
         viewContactsBar = view.findViewById(R.id.viewContactsToolbar)
         searchBar = view.findViewById(R.id.searchToolbar)
@@ -110,7 +130,6 @@ class ToolbarFragment : Fragment() {
                 else -> false
             }
         }
-
         return view
     }
 
@@ -165,5 +184,46 @@ class ToolbarFragment : Fragment() {
         private const val TAG = "ToolbarFragment"
         private const val STANDARD_APPBAR = 0
         private const val SEARCH_APPBAR = 1
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun location() {
+        val lm: LocationManager = con.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        val builder = AlertDialog.Builder(con)
+        builder.setTitle("Current Location")
+        builder.setMessage("Enable GPS to show weather update of your current location")
+
+        builder.setPositiveButton("Yes"){dialogInterface, which ->
+            Toast.makeText(con,"Enable Location Service",Toast.LENGTH_LONG).show()
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+            exitProcess(0)
+        }
+        builder.setNegativeButton("No"){dialogInterface, which ->
+            Toast.makeText(con,"Location Service not enabled",Toast.LENGTH_LONG).show()
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+        }
+        else{
+            getLocation()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation(){
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(con)
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+            Log.e("LONGI", location?.longitude.toString())
+                val geocoder = Geocoder(con, Locale.getDefault())
+                val addresses: List<Address> = geocoder.getFromLocation(location?.latitude?.toDouble()!!, location?.longitude?.toDouble()!!, 1)
+                val cityName: String = addresses[0].locality
+                Log.e("CITY:" , cityName)
+                viewModel.getCurrentWeatherData(cityName)
+        }
     }
 }

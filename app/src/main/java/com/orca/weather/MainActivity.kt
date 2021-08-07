@@ -1,14 +1,16 @@
 package com.orca.weather
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
-import com.orca.weather.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,12 +19,10 @@ class MainActivity : AppCompatActivity() {
 
         init()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
     }
 
     private fun init() {
-        val fragment = ToolbarFragment()
+        val fragment = ToolbarFragment(this)
         val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         // replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack so the user can navigate back.
