@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.Nullable
@@ -39,8 +41,8 @@ class ToolbarFragment : Fragment() {
         @Nullable savedInstanceState: Bundle?
     ): View {
         val view: View = inflater.inflate(R.layout.fragment_main, container, false)
-        val fab = view.findViewById(R.id.location_search) as ImageView
-        val editText = view.findViewById(R.id.tv_editText) as EditText
+        val reset = view.findViewById<ImageButton>(R.id.location_search)
+        val editText = view.findViewById<EditText>(R.id.tv_editText)
 
         viewModel = ViewModelProvider(this, ViewModelFactory(Repository(retrofitService))).get(MainViewModel::class.java)
 
@@ -80,23 +82,33 @@ class ToolbarFragment : Fragment() {
             }
         })
 
-        viewContactsBar = view.findViewById<View>(R.id.viewContactsToolbar) as AppBarLayout
-        searchBar = view.findViewById<View>(R.id.searchToolbar) as AppBarLayout
+        viewContactsBar = view.findViewById(R.id.viewContactsToolbar)
+        searchBar = view.findViewById(R.id.searchToolbar)
         Log.d(TAG, "onCreateView: started")
-        setAppBaeState(STANDARD_APPBAR)
-        val ivSearchContact = view.findViewById<View>(R.id.ivSearchIcon) as ImageView
+        setAppBarState(STANDARD_APPBAR)
+        val ivSearchContact = view.findViewById<ImageButton>(R.id.ivSearchIcon)
         ivSearchContact.setOnClickListener {
             Log.d(TAG, "onClick: clicked searched icon")
             toggleToolBarState()
         }
-        val ivBackArrow = view.findViewById<View>(R.id.ivBackArrow) as ImageView
+        val ivBackArrow = view.findViewById<ImageButton>(R.id.ivBackArrow)
         ivBackArrow.setOnClickListener {
             Log.d(TAG, "onClick: clicked back arrow.")
             toggleToolBarState()
         }
 
-        fab.setOnClickListener {
-            viewModel.getCurrentWeatherData(editText.text.toString())
+        reset.setOnClickListener {
+            editText.text.clear()
+        }
+
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_GO -> {
+                    viewModel.getCurrentWeatherData(editText.text.toString())
+                    true
+                }
+                else -> false
+            }
         }
 
         return view
@@ -106,17 +118,17 @@ class ToolbarFragment : Fragment() {
     private fun toggleToolBarState() {
         Log.d(TAG, "toggleToolBarState: toggling AppBarState.")
         if (mAppBarState == STANDARD_APPBAR) {
-            setAppBaeState(SEARCH_APPBAR)
+            setAppBarState(SEARCH_APPBAR)
         } else {
-            setAppBaeState(STANDARD_APPBAR)
+            setAppBarState(STANDARD_APPBAR)
         }
     }
 
     // Sets the appbar state for either search mode or standard mode.
-    private fun setAppBaeState(state: Int) {
+    private fun setAppBarState(state: Int) {
         Log.d(
             TAG,
-            "setAppBaeState: changing app bar state to: $state"
+            "setAppBarState: changing app bar state to: $state"
         )
         mAppBarState = state
         if (mAppBarState == STANDARD_APPBAR) {
@@ -132,7 +144,7 @@ class ToolbarFragment : Fragment() {
             } catch (e: NullPointerException) {
                 Log.d(
                     TAG,
-                    "setAppBaeState: NullPointerException: $e"
+                    "setAppBarState: NullPointerException: $e"
                 )
             }
         } else if (mAppBarState == SEARCH_APPBAR) {
@@ -146,7 +158,7 @@ class ToolbarFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setAppBaeState(STANDARD_APPBAR)
+        setAppBarState(STANDARD_APPBAR)
     }
 
     companion object {

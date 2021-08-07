@@ -13,32 +13,37 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+            <ImageButton
+                android:id="@+id/ivBackArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/ic_back"
-                android:layout_marginEnd="15dp"
-                android:id="@+id/ivBackArrow" />
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/string_null" />
 
             <EditText
+                android:id="@+id/tv_editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Search City"
-                android:paddingStart="8dp"
+                android:layout_marginHorizontal="16dp"
                 android:background="@null"
                 android:textSize="20sp"
-                android:layout_toRightOf="@id/ivBackArrow"
-                android:inputType="textPersonName"
-                android:id="@+id/tv_editText"/>
+                android:inputType="text"
+                android:imeOptions="actionGo" />
 
-            <ImageView
+            <ImageButton
+                android:id="@+id/location_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/location_search"
-                android:src="@drawable/locate_fab" />
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_delete_text"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/string_null" />
         </LinearLayout>
     </Toolbar>
 </com.google.android.material.appbar.AppBarLayout>

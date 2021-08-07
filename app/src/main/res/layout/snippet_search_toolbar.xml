@@ -5,7 +5,7 @@
     android:layout_height="56dp"
     android:layout_width="match_parent"
     android:background="#00FFFFFF"
-    android:layout_margin="16dp"
+    android:layout_margin="8dp"
     android:id="@+id/viewContactsToolbar"
     app:elevation="0dp">
 
@@ -26,13 +26,14 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+            <ImageButton
+                android:id="@+id/ivSearchIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/ic_search"
                 android:layout_marginEnd="15dp"
-                android:id="@+id/ivSearchIcon"
-                android:layout_alignParentRight="true"/>
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/string_null" />
         </LinearLayout>
     </Toolbar>
 </com.google.android.material.appbar.AppBarLayout>

@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/city_bar.xml" value="0.28615384615384615" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/ic_back.xml" value="0.28615384615384615" />
+        <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/ic_delete_text.xml" value="0.28615384615384615" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/ic_search.xml" value="0.28615384615384615" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/drawable/locate_fab.xml" value="0.28615384615384615" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/activity_main.xml" value="0.27447916666666666" />
@@ -15,6 +16,8 @@
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/search_layout.xml" value="0.27447916666666666" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/search_snippet.xml" value="0.27447916666666666" />
         <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/search_toolbar.xml" value="0.27447916666666666" />
+        <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/snippet_search_toolbar.xml" value="0.27447916666666666" />
+        <entry key="..\:/Android/AndroidStudioProjects/Weather2/app/src/main/res/layout/snippet_view_toolbar.xml" value="0.27447916666666666" />
       </map>
     </option>
   </component>
