@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.appbar.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="64dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="56dp"
     android:layout_width="match_parent"
-    android:background="@color/search_bar_color"
-    android:padding="16dp"
-    android:id="@+id/searchToolbar">
+    android:background="@drawable/search_bar_background"
+    android:padding="8dp"
+    android:layout_margin="16dp"
+    android:id="@+id/searchToolbar"
+    app:elevation="0dp">
 
     <Toolbar
         android:layout_width="match_parent"
@@ -20,8 +23,7 @@
                 android:id="@+id/ivBackArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
-                android:background="#00FFFFFF"
+                android:background="@drawable/ic_back"
                 android:contentDescription="@string/string_null" />
 
             <EditText
@@ -31,6 +33,7 @@
                 android:layout_weight="1"
                 android:hint="Search City"
                 android:fontFamily="@font/urbanist_family"
+                android:textColorHint="@color/white"
                 android:layout_marginHorizontal="16dp"
                 android:background="@null"
                 android:textSize="20sp"
@@ -42,8 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_delete_text"
-                android:background="#00FFFFFF"
+                android:background="@drawable/ic_close"
                 android:contentDescription="@string/string_null" />
         </LinearLayout>
     </Toolbar>

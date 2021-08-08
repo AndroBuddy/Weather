@@ -16,10 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -59,7 +56,6 @@ class ToolbarFragment(private val con : Context) : Fragment() {
 
 
         val textView = view.findViewById<TextView>(R.id.textView)
-        val weatherView = view.findViewById<TextView>(R.id.text2)
 
         val city = view.findViewById<TextView>(R.id.location)
         val feelsLike = view.findViewById<TextView>(R.id.feels_like)
@@ -68,6 +64,11 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         val pressure = view.findViewById<TextView>(R.id.pressure)
         val wind = view.findViewById<TextView>(R.id.wind)
 
+        val lat = view.findViewById<TextView>(R.id.latitude)
+        val long = view.findViewById<TextView>(R.id.longitude)
+
+        val mWeatherIcon = view.findViewById<ImageView>(R.id.weather_icon)
+
 
         location()
         viewModel.weatherList.observe(viewLifecycleOwner) { result ->
@@ -75,22 +76,27 @@ class ToolbarFragment(private val con : Context) : Fragment() {
                 Log.e("MAIN ACTIVITY", result.coord.lon.toString())
                 val temp = result.main.temp.roundToInt()
                 val feelsLikeVal = result.main.feels_like.roundToInt()
-                val humid = result.main.humidity.roundToInt()
-                val pressureVal = result.main.pressure.roundToInt()
-                val windVal = result.wind.speed
-
-                city!!.text = result.name + ", " + result.sys.country
-                feelsLike!!.text = "$feelsLikeVal°"
-                textView!!.text = "$temp°"
-                weatherView!!.text = result.weather[0].description.replaceFirstChar {
+                val condition = result.weather[0].description.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
                     ) else it.toString()
                 }
+                val humid = result.main.humidity.roundToInt()
+                val pressureVal = result.main.pressure.roundToInt()
+                val windVal = result.wind.speed
 
+                city!!.text = result.name
+                feelsLike!!.text = "Feels like $feelsLikeVal°  |  $condition"
+                textView!!.text = "$temp°"
                 humidity!!.text = "$humid %"
                 pressure!!.text = "$pressureVal mBar"
                 wind!!.text = "$windVal Km/h"
+
+                mWeatherIcon.setImageResource(fetchIcon(result.weather[0].main))
+
+                lat!!.text = "Lat: ${result.coord.lat}"
+                long!!.text = "Lon: ${result.coord.lon}"
+
             } catch (e: Exception) {
                 Log.e("MAIN ACTIVITY", "Invalid Input of City Name")
             }
@@ -125,6 +131,18 @@ class ToolbarFragment(private val con : Context) : Fragment() {
             }
         }
         return view
+    }
+
+    private fun fetchIcon(mCondition: String): Int {
+        return when (mCondition) {
+            "Thunderstorm" -> R.drawable.thunderstorm
+            "Drizzle" -> R.drawable.drizzle
+            "Rain" -> R.drawable.rain
+            "Clouds" -> R.drawable.clouds
+            "Clear" -> R.drawable.clear
+            "Snow" -> R.drawable.snow
+            else -> R.drawable.other
+        }
     }
 
     // Initiate toggle (it means when you click the search icon it pops up the editText and clicking the back button goes to the search icon again)
