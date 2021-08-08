@@ -20,12 +20,10 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.appbar.AppBarLayout
@@ -36,17 +34,13 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
-
 class ToolbarFragment(private val con : Context) : Fragment() {
     private var mAppBarState = 0
     private var viewContactsBar: AppBarLayout? = null
     private var searchBar: AppBarLayout? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var checkLocationPermission: ActivityResultLauncher<Array<String>>
-    private lateinit var googleApiClient: GoogleApiClient
     private lateinit var viewModel: MainViewModel
     private val retrofitService = RetrofitService.getInstance()
-    private var lon:String = "nullify"
 
     @SuppressLint("SetTextI18n", "MissingPermission")
     @Nullable
@@ -195,13 +189,13 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         builder.setTitle("Current Location")
         builder.setMessage("Enable GPS to show weather update of your current location")
 
-        builder.setPositiveButton("Yes"){dialogInterface, which ->
+        builder.setPositiveButton("Yes"){ _, _ ->
             Toast.makeText(con,"Enable Location Service",Toast.LENGTH_LONG).show()
             val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(intent)
             exitProcess(0)
         }
-        builder.setNegativeButton("No"){dialogInterface, which ->
+        builder.setNegativeButton("No"){ _, _ ->
             Toast.makeText(con,"Location Service not enabled",Toast.LENGTH_LONG).show()
         }
         val alertDialog: AlertDialog = builder.create()
@@ -218,9 +212,10 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(con)
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
-            Log.e("LONGI", location?.longitude.toString())
+            Log.e("LONGITUDE", location?.longitude.toString())
                 val geocoder = Geocoder(con, Locale.getDefault())
-                val addresses: List<Address> = geocoder.getFromLocation(location?.latitude?.toDouble()!!, location?.longitude?.toDouble()!!, 1)
+                val addresses: List<Address> = geocoder.getFromLocation(location?.latitude!!,
+                    location.longitude, 1)
                 val cityName: String = addresses[0].locality
                 Log.e("CITY:" , cityName)
                 viewModel.getCurrentWeatherData(cityName)

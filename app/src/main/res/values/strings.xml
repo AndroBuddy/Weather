@@ -2,4 +2,5 @@
     <string name="app_name">Weather</string>
     <string name="def_val">N/A</string>
     <string name="string_null">null</string>
+    <string name="feels_like">Feels like</string>
 </resources>

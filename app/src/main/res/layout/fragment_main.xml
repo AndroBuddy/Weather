@@ -39,14 +39,16 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="24dp"
+            android:textSize="24sp"
             android:fontFamily="@font/urbanist_family"
-            android:text="Feel's like" />
+            android:text="@string/feels_like" />
 
         <TextView
             android:id="@+id/feels_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
+            android:textSize="24sp"
             android:fontFamily="@font/urbanist_family"
             android:text="@string/def_val" />
 
