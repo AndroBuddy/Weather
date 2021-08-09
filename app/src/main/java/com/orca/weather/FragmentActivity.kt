@@ -74,28 +74,24 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         viewModel.weatherList.observe(viewLifecycleOwner) { result ->
             try {
                 Log.e("MAIN ACTIVITY", result.coord.lon.toString())
-                val temp = result.main.temp.roundToInt()
-                val feelsLikeVal = result.main.feels_like.roundToInt()
                 val condition = result.weather[0].description.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
                     ) else it.toString()
                 }
-                val humid = result.main.humidity.roundToInt()
-                val pressureVal = result.main.pressure.roundToInt()
-                val windVal = result.wind.speed
 
                 city!!.text = result.name
-                feelsLike!!.text = "Feels like $feelsLikeVal°  |  $condition"
-                textView!!.text = "$temp°"
-                humidity!!.text = "$humid %"
-                pressure!!.text = "$pressureVal mBar"
-                wind!!.text = "$windVal Km/h"
 
                 mWeatherIcon.setImageResource(fetchIcon(result.weather[0].main))
+                textView!!.text = "${result.main.temp.roundToInt()}°"
+                feelsLike!!.text = "Feels like ${result.main.feels_like.roundToInt()}°  ~  $condition"
 
-                lat!!.text = "Lat: ${result.coord.lat}"
-                long!!.text = "Lon: ${result.coord.lon}"
+                humidity!!.text = "${result.main.humidity.roundToInt()} %"
+                pressure!!.text = "${result.main.pressure.roundToInt()} mBar"
+                wind!!.text = "${result.wind.speed} Km/h"
+
+                lat!!.text = "${(result.coord.lat * 100.0).roundToInt() / 100.0}"
+                long!!.text = "${(result.coord.lon * 100.0).roundToInt() / 100.0}"
 
             } catch (e: Exception) {
                 Log.e("MAIN ACTIVITY", "Invalid Input of City Name")

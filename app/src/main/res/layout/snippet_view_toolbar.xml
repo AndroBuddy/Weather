@@ -2,10 +2,9 @@
 <com.google.android.material.appbar.AppBarLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="56dp"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/search_bar_background"
-    android:padding="8dp"
     android:layout_margin="16dp"
     android:id="@+id/searchToolbar"
     app:elevation="0dp">
@@ -21,9 +20,10 @@
 
             <ImageButton
                 android:id="@+id/ivBackArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_back"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/ic_back"
                 android:contentDescription="@string/string_null" />
 
             <EditText
@@ -34,6 +34,7 @@
                 android:hint="Search City"
                 android:fontFamily="@font/urbanist_family"
                 android:textColorHint="@color/white"
+                android:textColor="@color/white"
                 android:layout_marginHorizontal="16dp"
                 android:background="@null"
                 android:textSize="20sp"
@@ -42,10 +43,11 @@
 
             <ImageButton
                 android:id="@+id/location_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/ic_close"
+                android:background="#00FFFFFF"
+                android:src="@drawable/ic_close"
                 android:contentDescription="@string/string_null" />
         </LinearLayout>
     </Toolbar>

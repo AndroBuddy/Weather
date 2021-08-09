@@ -3,4 +3,7 @@
     <string name="def_val">N/A</string>
     <string name="string_null">null</string>
     <string name="feels_like">Feels like</string>
+    <string name="default_humidity">Humidity</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
 </resources>
