@@ -19,6 +19,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -26,6 +29,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.appbar.AppBarLayout
 import com.orca.weather.ViewModel.MainViewModel
 import com.orca.weather.api.RetrofitService
+import com.orca.weather.model.Main
 import com.orca.weather.repository.Repository
 import java.util.*
 import kotlin.math.roundToInt
@@ -37,6 +41,7 @@ class ToolbarFragment(private val con : Context) : Fragment() {
     private var searchBar: AppBarLayout? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var viewModel: MainViewModel
+    val myPreference = SharedPreference(con)
     private val retrofitService = RetrofitService.getInstance()
 
     @SuppressLint("SetTextI18n", "MissingPermission")
@@ -69,33 +74,62 @@ class ToolbarFragment(private val con : Context) : Fragment() {
 
         val mWeatherIcon = view.findViewById<ImageView>(R.id.weather_icon)
 
+        if (myPreference.getCityName() != null){
+            val preference = con.getSharedPreferences("PREFERENCE", Context.MODE_PRIVATE)
+            city.text = preference.getString(myPreference.PREFERENCE_CITY, null)
+            textView.text = preference.getFloat(myPreference.PREFERENCE_TEMP, 0.0F).toString()
+            humidity.text = preference.getFloat(myPreference.PREFERENCE_HUMID, 0.0F).toString()
+            feelsLike.text = preference.getFloat(myPreference.PREFERENCE_FEELSLIKE, 0.0F).toString()
+            pressure.text = preference.getFloat(myPreference.PREFERENCE_PRESSURE, 0.0F).toString()
+            wind.text = preference.getFloat(myPreference.PREFERENCE_WIND, 0.0F).toString()
+            lat.text = preference.getFloat(myPreference.PREFERENCE_LAT, 0.0F).toString()
+            long.text = preference.getFloat(myPreference.PREFERENCE_LON, 0.0F).toString()
+        }
 
         location()
         viewModel.weatherList.observe(viewLifecycleOwner) { result ->
-            try {
-                Log.e("MAIN ACTIVITY", result.coord.lon.toString())
-                val condition = result.weather[0].description.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase(
-                        Locale.getDefault()
-                    ) else it.toString()
+            if ((activity as MainActivity).checkInternet()) {
+                try {
+                    Log.e("MAIN ACTIVITY", result.coord.lon.toString())
+                    val condition = result.weather[0].description.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.getDefault()
+                        ) else it.toString()
+                    }
+
+                    city!!.text = result.name
+
+                    mWeatherIcon.setImageResource(fetchIcon(result.weather[0].main))
+                    textView!!.text = "${result.main.temp.roundToInt()}°"
+                    feelsLike!!.text =
+                        "Feels like ${result.main.feels_like.roundToInt()}°  ~  $condition"
+
+                    humidity!!.text = "${result.main.humidity.roundToInt()} %"
+                    pressure!!.text = "${result.main.pressure.roundToInt()} mBar"
+                    wind!!.text = "${result.wind.speed} Km/h"
+
+                    lat!!.text = "${(result.coord.lat * 100.0).roundToInt() / 100.0}"
+                    long!!.text = "${(result.coord.lon * 100.0).roundToInt() / 100.0}"
+
+                    myPreference.setCityName(result.name)
+                    myPreference.setTemp(result.main.temp)
+                    myPreference.setFeelsTemp(result.main.feels_like)
+                    myPreference.setHumid(result.main.humidity)
+                    myPreference.setPressure(result.main.pressure)
+                    myPreference.setWind(result.wind.speed)
+                    myPreference.setLat(result.coord.lat)
+                    myPreference.setLon(result.coord.lon)
+                } catch (e: Exception) {
+                    Log.e("MAIN ACTIVITY", "Invalid Input of City Name")
+                    Toast.makeText(con, "Invalid Input", Toast.LENGTH_LONG).show()
                 }
-
-                city!!.text = result.name
-
-                mWeatherIcon.setImageResource(fetchIcon(result.weather[0].main))
-                textView!!.text = "${result.main.temp.roundToInt()}°"
-                feelsLike!!.text = "Feels like ${result.main.feels_like.roundToInt()}°  ~  $condition"
-
-                humidity!!.text = "${result.main.humidity.roundToInt()} %"
-                pressure!!.text = "${result.main.pressure.roundToInt()} mBar"
-                wind!!.text = "${result.wind.speed} Km/h"
-
-                lat!!.text = "${(result.coord.lat * 100.0).roundToInt() / 100.0}"
-                long!!.text = "${(result.coord.lon * 100.0).roundToInt() / 100.0}"
-
-            } catch (e: Exception) {
-                Log.e("MAIN ACTIVITY", "Invalid Input of City Name")
+            }else{
+                Toast.makeText(con, "Internet not connected", Toast.LENGTH_LONG).show()
             }
+        }
+
+        viewModel.errorMessage.observe(viewLifecycleOwner){
+            Toast.makeText(con, "Something went wrong. Check your Internet Connection", Toast.LENGTH_LONG).show()
         }
 
         viewContactsBar = view.findViewById(R.id.viewContactsToolbar)
@@ -120,6 +154,7 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         editText.setOnEditorActionListener { _, actionId, _ ->
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_GO -> {
+                    (activity as MainActivity).hideKeyboard(view)
                     viewModel.getCurrentWeatherData(editText.text.toString())
                     true
                 }
@@ -211,6 +246,9 @@ class ToolbarFragment(private val con : Context) : Fragment() {
         }
         builder.setNegativeButton("No"){ _, _ ->
             Toast.makeText(con,"Location Service not enabled",Toast.LENGTH_LONG).show()
+            if (myPreference.getCityName()!=null){
+                viewModel.getCurrentWeatherData(myPreference.getCityName().toString())
+            }
         }
         val alertDialog: AlertDialog = builder.create()
         alertDialog.setCancelable(false)
