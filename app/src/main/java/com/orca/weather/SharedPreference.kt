@@ -13,7 +13,8 @@ class SharedPreference(context: Context) {
     val PREFERENCE_WIND = "wind"
     val PREFERENCE_LAT = "lat"
     val PREFERENCE_LON = "lon"
-
+    val PREFERENCE_CONDITION = "condition"
+    val PREFERENCE_IMAGE = "image"
 
     val preference = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 
@@ -53,6 +54,11 @@ class SharedPreference(context: Context) {
         editor.putFloat(PREFERENCE_WIND, wind.toFloat())
         editor.apply()
     }
+    fun setCondition(condition : String){
+        val editor = preference.edit()
+        editor.putString(PREFERENCE_CONDITION, condition)
+        editor.apply()
+    }
     fun setLat(lat : Double){
         val editor = preference.edit()
         editor.putFloat(PREFERENCE_LAT, lat.toFloat())
@@ -63,5 +69,11 @@ class SharedPreference(context: Context) {
         editor.putFloat(PREFERENCE_LON, lon.toFloat())
         editor.apply()
     }
+    fun setImage(id: String){
+        val editor = preference.edit()
+        editor.putString(PREFERENCE_IMAGE, id)
+        editor.apply()
+    }
+
 
 }
